@@ -110,10 +110,24 @@ namespace Treehouse.FitnessFrog.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View();
+            Entry entry = _entriesRepository.GetEntry((int)id);
+
+            if (entry == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(entry);
         }
 
-        private static void ValidateEntry(Entry entry)
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            _entriesRepository.DeleteEntry(id);
+            return RedirectToAction("Index");
+        }
+
+        private void ValidateEntry(Entry entry)
         {
             // If there aren't any "Duration" field validation errors
             // then make sure that the duration is greater than "0".
@@ -124,7 +138,7 @@ namespace Treehouse.FitnessFrog.Controllers
             }
         }
 
-        private static void SetupActivitiesSelectListItems()
+        private void SetupActivitiesSelectListItems()
         {
             ViewBag.ActivitiesSelectListItems = new SelectList(
                             Data.Data.Activities, "Id", "Name");
